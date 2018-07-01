@@ -9,21 +9,19 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CrossCommon.Net
+namespace CrossCommon
 {
-    class RestApiClient
+    public class RestApiClient
     {
         protected readonly HttpClient Client;
 
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
-        protected RestApiClient()
+        protected RestApiClient() : this(CreateDefaultClient())
         {
-            Client = new HttpClient();
-            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        protected RestApiClient(string baseUrl) : this()
+        protected RestApiClient(string baseUrl) : this(CreateDefaultClient())
         {
             if (!string.IsNullOrWhiteSpace(baseUrl))
             {
@@ -33,6 +31,18 @@ namespace CrossCommon.Net
                     Client.BaseAddress = baseUri;
                 }
             }
+        }
+
+        protected RestApiClient(HttpClient httpClient)
+        {
+            Client = httpClient;
+        }
+
+        private static HttpClient CreateDefaultClient()
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return client;
         }
 
         /// <summary>
@@ -202,7 +212,7 @@ namespace CrossCommon.Net
             System.Diagnostics.Debug.WriteLine(str);
         }
 
-        private static Uri ParseUri(string baseUrl)
+        protected static Uri ParseUri(string baseUrl)
         {
             if (!(baseUrl?.Trim()?.EndsWith("/") ?? false))
             {

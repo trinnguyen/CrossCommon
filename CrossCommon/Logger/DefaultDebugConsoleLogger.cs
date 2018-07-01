@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace CrossCommon
 {
-
     public class DefaultDebugConsoleLogger : ILogger
     {
         public void WriteLog(LoggerCategory category, string message)

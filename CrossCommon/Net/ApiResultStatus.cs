@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CrossCommon.Net
+namespace CrossCommon
 {
     public enum ApiResultStatus
     {

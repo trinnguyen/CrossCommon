@@ -6,6 +6,5 @@ namespace CrossCommon
     public interface ILogger
     {
         void WriteLog(LoggerCategory category, string message);
-    }
-    
+    }   
 }

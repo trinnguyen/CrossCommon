@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace CrossCommon.Mvvm
+namespace CrossCommon
 {
     public class BindableBase : INotifyPropertyChanged
     {
