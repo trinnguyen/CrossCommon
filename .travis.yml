@@ -1,0 +1,8 @@
+language: csharp
+solution: CrossCommon.sln
+install:
+  - nuget restore CrossCommon.sln
+mono:
+  - latest
+script:
+  - msbuild /p:Configuration=Release CrossCommon.sln
