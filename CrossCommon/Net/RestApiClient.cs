@@ -17,11 +17,11 @@ namespace CrossCommon
 
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
-        protected RestApiClient() : this(CreateDefaultClient())
+        public RestApiClient() : this(CreateDefaultClient())
         {
         }
 
-        protected RestApiClient(string baseUrl) : this(CreateDefaultClient())
+        public RestApiClient(string baseUrl) : this(CreateDefaultClient())
         {
             if (!string.IsNullOrWhiteSpace(baseUrl))
             {
@@ -33,7 +33,7 @@ namespace CrossCommon
             }
         }
 
-        protected RestApiClient(HttpClient httpClient)
+        public RestApiClient(HttpClient httpClient)
         {
             Client = httpClient;
         }
@@ -177,7 +177,6 @@ namespace CrossCommon
                                 item = serializer.Deserialize<TResult>(reader);
                             }
                         }
-
                     }
                 }
                 return new ApiResult<TResult>(ToNetworkState(response), item);
@@ -197,7 +196,6 @@ namespace CrossCommon
             {
                 return ApiResultStatus.Unauthorized;
             }
-
 
             return ApiResultStatus.InternalProblem;
         }
