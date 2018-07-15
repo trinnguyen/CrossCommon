@@ -13,8 +13,6 @@ namespace CrossCommon
 {
     public class RestApiClient
     {
-        protected readonly HttpClient Client;
-
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
         public RestApiClient() : this(CreateDefaultClient())
@@ -46,6 +44,12 @@ namespace CrossCommon
         }
 
         /// <summary>
+        /// Underlying HttpClient
+        /// </summary>
+        /// <value>The client.</value>
+        public HttpClient Client { get; private set; }
+
+        /// <summary>
         /// GET request
         /// </summary>
         /// <param name="url"></param>
@@ -68,7 +72,9 @@ namespace CrossCommon
         public Task<ApiResult<TResult>> PostAsync<T, TResult>(string url, T dto)
         {
             string json = JsonConvert.SerializeObject(dto);
-            HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            Log.Debug(json);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return PostContentAsync<TResult>(url, content);
         }
 
@@ -119,9 +125,9 @@ namespace CrossCommon
             }
         }
 
-        protected HttpRequestMessage CreateGetRequest(string url) => new HttpRequestMessage(HttpMethod.Get, CreateUri(url));
+        public HttpRequestMessage CreateGetRequest(string url) => new HttpRequestMessage(HttpMethod.Get, CreateUri(url));
 
-        protected HttpRequestMessage CreatePostRequest(string url, HttpContent content) => new HttpRequestMessage(HttpMethod.Post, CreateUri(url)) { Content = content };
+        public HttpRequestMessage CreatePostRequest(string url, HttpContent content) => new HttpRequestMessage(HttpMethod.Post, CreateUri(url)) { Content = content };
 
         private Uri CreateUri(string url)
         {
@@ -183,6 +189,10 @@ namespace CrossCommon
             }
             else
             {
+#if DEBUG
+                var str = await response.Content.ReadAsStringAsync();
+                Debug(str);
+#endif
                 return new ApiResult<TResult>(ToNetworkState(response));
             }
         }
