@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace CrossCommon
 {
-    public class RestApiClient
+    public class RestApiClient : IDisposable
     {
-        private readonly JsonSerializer _serializer = new JsonSerializer();
+        private JsonSerializer _serializer = new JsonSerializer();
 
         public RestApiClient() : this(CreateDefaultClient())
         {
@@ -231,5 +231,37 @@ namespace CrossCommon
             Uri.TryCreate(baseUrl, UriKind.Absolute, out res);
             return res;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // json
+                    _serializer = null;
+
+                    // http
+                    if (Client != null)
+                    {
+                        Client.Dispose();
+                        Client = null;
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+        #endregion
     }
 }
