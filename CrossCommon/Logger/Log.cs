@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace CrossCommon
@@ -29,11 +30,13 @@ namespace CrossCommon
             }
         }
 
+        [Conditional("DEBUG")]
         public static void Debug(string message, [CallerFilePath] string filePath = "")
         {
             InternalWriteLog(LoggerCategory.Debug, GetMessage(message, filePath));
         }
 
+        [Conditional("DEBUG")]
         public static void Debug(string format, params object[] args)
         {
             Debug(string.Format(format, args));
@@ -59,7 +62,7 @@ namespace CrossCommon
             Error(string.Format(message, args));
         }
 
-        public static void Exception(Exception exception, [CallerFilePath] string filePath = "")
+        public static void Exception(Exception exception, [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "")
         {
             while (exception != null && exception.InnerException != null)
             {
@@ -69,7 +72,7 @@ namespace CrossCommon
             if (exception != null)
             {
                 string message = string.Format("Exception: {0} \n {1}", exception.Message, exception.StackTrace);
-                Error(message);
+                Error(message, filePath, memberName);
             }
         }
 

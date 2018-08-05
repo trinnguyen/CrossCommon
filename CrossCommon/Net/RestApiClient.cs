@@ -171,8 +171,8 @@ namespace CrossCommon
                 else
                 {
 #if DEBUG
-                    var str = await response.Content.ReadAsStringAsync();
-                    Debug(str);
+                    //var str = await response.Content.ReadAsStringAsync();
+                    //Debug(str);
 #endif
                     using (var stream = await response.Content.ReadAsStreamAsync())
                     {
