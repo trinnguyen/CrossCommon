@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace CrossCommon
 {
@@ -28,19 +30,21 @@ namespace CrossCommon
             }
         }
 
-        public static void Debug(string message)
+        [Conditional("DEBUG")]
+        public static void Debug(string message, [CallerFilePath] string filePath = "")
         {
-            InternalWriteLog(LoggerCategory.Debug, message);
+            InternalWriteLog(LoggerCategory.Debug, GetMessage(message, filePath));
         }
 
+        [Conditional("DEBUG")]
         public static void Debug(string format, params object[] args)
         {
             Debug(string.Format(format, args));
         }
 
-        public static void Info(string message)
+        public static void Info(string message, [CallerFilePath] string filePath = "")
         {
-            InternalWriteLog(LoggerCategory.Info, message);
+            InternalWriteLog(LoggerCategory.Info, GetMessage(message, filePath));
         }
 
         public static void Info(string message, params object[] args)
@@ -48,9 +52,9 @@ namespace CrossCommon
             Info(string.Format(message, args));
         }
 
-        public static void Error(string message)
+        public static void Error(string message, [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "")
         {
-            InternalWriteLog(LoggerCategory.Error, message);
+            InternalWriteLog(LoggerCategory.Error, GetMessage(message, filePath, memberName));
         }
 
         public static void Error(string message, params object[] args)
@@ -58,7 +62,7 @@ namespace CrossCommon
             Error(string.Format(message, args));
         }
 
-        public static void Exception(Exception exception)
+        public static void Exception(Exception exception, [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "")
         {
             while (exception != null && exception.InnerException != null)
             {
@@ -68,7 +72,7 @@ namespace CrossCommon
             if (exception != null)
             {
                 string message = string.Format("Exception: {0} \n {1}", exception.Message, exception.StackTrace);
-                Error(message);
+                Error(message, filePath, memberName);
             }
         }
 
@@ -87,6 +91,19 @@ namespace CrossCommon
             {
                 logger.WriteLog(category, message);
             }
+        }
+
+        private static string GetMessage(string message, string filePath, string memberName = "")
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+                return message;
+
+            string prefix = System.IO.Path.GetFileNameWithoutExtension(filePath);
+            if (!string.IsNullOrWhiteSpace(memberName))
+            {
+                prefix += $"->{memberName}";
+            }
+            return $"{prefix}: {message}";
         }
     }
 }
