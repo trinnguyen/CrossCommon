@@ -153,39 +153,31 @@ namespace CrossCommon
 
         private static async Task<ApiResult<TResult>> ParseResponse<TResult>(JsonSerializer serializer, HttpResponseMessage response)
         {
-            Debug(response.StatusCode);
-            if (response.IsSuccessStatusCode)
-            {
-                TResult item = default(TResult);
-                if (typeof(TResult) == typeof(string))
-                {
-                    string str = await response.Content.ReadAsStringAsync();
-                    item = (TResult)((object)str);
-                }
-                else
-                {
 #if DEBUG
-                    var str = await response.Content.ReadAsStringAsync();
-                    Debug(str);
+            Debug(response.StatusCode);
+            Debug(await response.Content.ReadAsStringAsync());
 #endif
-                    using (var stream = await response.Content.ReadAsStreamAsync())
-                    {
-                        using (var textReader = new StreamReader(stream))
-                        {
-                            using (JsonReader reader = new JsonTextReader(textReader))
-                            {
-                                item = serializer.Deserialize<TResult>(reader);
-                            }
-                        }
-
-                    }
-                }
-                return new ApiResult<TResult>(ToNetworkState(response), item);
+            TResult item = default(TResult);
+            if (typeof(TResult) == typeof(string))
+            {
+                string str = await response.Content.ReadAsStringAsync();
+                item = (TResult)((object)str);
             }
             else
             {
-                return new ApiResult<TResult>(ToNetworkState(response));
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    using (var textReader = new StreamReader(stream))
+                    {
+                        using (JsonReader reader = new JsonTextReader(textReader))
+                        {
+                            item = serializer.Deserialize<TResult>(reader);
+                        }
+                    }
+
+                }
             }
+            return new ApiResult<TResult>(ToNetworkState(response), item);
         }
 
         private static ApiResultStatus ToNetworkState(HttpResponseMessage response)
