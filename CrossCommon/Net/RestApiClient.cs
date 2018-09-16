@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CrossCommon
 {
-    public class RestApiClient
+    public class RestApiClient : IDisposable
     {
         protected readonly HttpClient Client;
 
@@ -214,6 +214,11 @@ namespace CrossCommon
             Uri res = null;
             Uri.TryCreate(baseUrl, UriKind.Absolute, out res);
             return res;
+        }
+
+        public void Dispose()
+        {
+            Client?.Dispose();
         }
     }
 }
