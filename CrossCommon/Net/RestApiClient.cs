@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +13,7 @@ namespace CrossCommon
 {
     public class RestApiClient : IDisposable
     {
-        protected readonly HttpClient Client;
+        protected HttpClient Client;
 
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
@@ -141,7 +141,7 @@ namespace CrossCommon
         private static ApiResult<TResult> ParseException<TResult>(Exception ex)
         {
             Debug(ex);
-            if (ex is WebException)
+            if (ex is WebException || ex.GetType().FullName.StartsWith("Java.Net.", StringComparison.Ordinal))
             {
                 return new ApiResult<TResult>(ApiResultStatus.NoInternetConnection);
             }
@@ -216,9 +216,28 @@ namespace CrossCommon
             return res;
         }
 
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Client?.Dispose();
+                    Client = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            Client?.Dispose();
+            Dispose(true);
         }
+        #endregion
     }
 }
